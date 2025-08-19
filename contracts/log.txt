@@ -1,0 +1,70 @@
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Object Changes                                                                                                                 │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Created Objects:                                                                                                               │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x0451b3b791291c4cd8ca26f16f1b4297b9945715529e4f7152adbf61b9ddfa05                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )                               │
+│  │ ObjectType: 0x2::display::Display<0xf8fabdd0dfca416ee1472bb4317bcd0b2938251c449ba21f251f2aefbe60b41a::web3face_nft::MyNFT>  │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: Cwv7GXtdrSePvPFvvwVXfs8suBj8ig9jABScF64yYQuP                                                                        │
+│  └──                                                                                                                           │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x74e4289e32933bd604636c04386586bf69e6af1aa317bc425aa1472800b64133                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Shared( 453289813 )                                                                                                  │
+│  │ ObjectType: 0xf8fabdd0dfca416ee1472bb4317bcd0b2938251c449ba21f251f2aefbe60b41a::web3face_nft::FeeConfig                     │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: 6DjeUkgCqC8wM8kXVoRKpY38GS7JsQhXUZinjTp8biMz                                                                        │
+│  └──                                                                                                                           │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x794da9c9dd50fdc17b9745ec6e0eea1deea8afde1bfea8257db012818874ea6a                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )                               │
+│  │ ObjectType: 0x2::package::UpgradeCap                                                                                        │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: 5zCp8Y8SR59RL7dVhZv5VBx8pp4bBcwsEcLiV7LScSLG                                                                        │
+│  └──                                                                                                                           │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x8ce32a224c4436b59ccb2be2ded64ba672c42f0541f867621df8d50c86723c64                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )                               │
+│  │ ObjectType: 0xf8fabdd0dfca416ee1472bb4317bcd0b2938251c449ba21f251f2aefbe60b41a::web3face_nft::AdminCap                      │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: 3VdRcJn8PmkADEuHGLGFbE3krNyd8oKU5QbQYRciSDwc                                                                        │
+│  └──                                                                                                                           │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x9c95513491f7a4ec736cb7d5a5cb439612c5e7dac39a6f3ead9bdf169f09ab8e                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )                               │
+│  │ ObjectType: 0x2::package::Publisher                                                                                         │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: rdduCu1dgNR3inzkPrA2yQ1dVShCTzGmh5EAszkLdrR                                                                         │
+│  └──                                                                                                                           │
+│ Mutated Objects:                                                                                                               │
+│  ┌──                                                                                                                           │
+│  │ ObjectID: 0x6bd3ff353c4699262fb18ea62493caf6aa406bc3003191db6e5832f30f70749c                                                │
+│  │ Sender: 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436                                                  │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )                               │
+│  │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI>                                                                                  │
+│  │ Version: 453289813                                                                                                          │
+│  │ Digest: 98xypPF6CaRVNdB45qLiWnfHv6i9k5cPCvdtgybJSZYu                                                                        │
+│  └──                                                                                                                           │
+│ Published Objects:                                                                                                             │
+│  ┌──                                                                                                                           │
+│  │ PackageID: 0xf8fabdd0dfca416ee1472bb4317bcd0b2938251c449ba21f251f2aefbe60b41a                                               │
+│  │ Version: 1                                                                                                                  │
+│  │ Digest: 3eibTbKPXh45K2PBZGQbXiTmVP8h4JNVja9aH3JjMiG3                                                                        │
+│  │ Modules: web3face_nft                                                                                                       │
+│  └──                                                                                                                           │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Balance Changes                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ┌──                                                                                              │
+│  │ Owner: Account Address ( 0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436 )  │
+│  │ CoinType: 0x2::sui::SUI                                                                        │
+│  │ Amount: -21795880                                                                              │
+│  └──                                                                                              │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
