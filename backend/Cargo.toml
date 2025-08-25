@@ -25,6 +25,5 @@ bs58 = "0.5.1"
 fastcrypto = "0.1.9"
 hex = "0.4.3"
 eyre = "0.6"
-toml = "0.7.0"             # Replace with the version serde_toml_merge uses
 
 
