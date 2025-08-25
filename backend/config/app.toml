@@ -1,0 +1,13 @@
+[web]
+port = 8000
+[web.middlewares]
+static = { enable = true }
+[logger.file]
+enable = true                              # 是否将日志写入文件
+non_blocking = true                         # 是否启用非阻塞方式写入，默认开启
+format = "compact"                          # 日志格式支持compact、pretty、json，默认是compact
+rotation = "daily"                          # 日志滚动方式minutely、hourly、daily、never，默认按天滚动
+dir = "/data/logs/web3face"                              # 日志文件目录
+filename_prefix = "server"                     # 日志文件前缀名
+filename_suffix = "log"                     # 日志文件后缀名
+max_log_files = 365                         # 保留的最大日志
