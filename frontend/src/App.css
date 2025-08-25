@@ -1,0 +1,7 @@
+.game-app {
+  background-color: #f0f0f0;
+}
+
+main {
+  min-height: calc(100vh - 60px);
+}

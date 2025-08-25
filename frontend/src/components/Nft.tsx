@@ -1,0 +1,243 @@
+import { useState, useEffect }  from 'react';
+import {Transaction} from '@mysten/sui/transactions'
+import { SuiClient,getFullnodeUrl } from '@mysten/sui/client';
+import type { UserInfoDTO} from '../domain/dto';
+import {
+  useWallet,
+} from "@suiet/wallet-kit";
+
+import {  Input , InputNumber } from 'antd';
+import './Nft.css';
+
+const suiScanUrl = import.meta.env.VITE_SUISCAN_URL;
+const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
+const feeConfigAddress = import.meta.env.VITE_FEE_CONFIG_ADDRESS;
+const adminCapAddress = import.meta.env.VITE_ADMIN_CAP_ADDRESS;
+const appName = import.meta.env.VITE_APP_NAME;
+const NFT = () => {
+  const [data, setData] = useState(null);
+  const [status, setStatus] = useState('');
+
+  const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
+  const [digest, setDigest] = useState<string | null>(null);
+  
+  const [suiPrivce, setSuiPrice] = useState<number | null>(null);
+  const [toAddress, setToAddress] = useState<string | null>(null);
+  // amount: number = 1 * 1_000_000_000; // 1 SUI in lamports
+  const [amount, setAmount] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const wallet = useWallet();
+
+
+  async function performTransaction() {
+      if (!wallet.address) {
+        console.error('Wallet address is not available');
+        return;
+      }
+      const tx = new Transaction()
+      tx.setSender(wallet.address);
+      tx.setGasBudget(100_000_000); // 设置 gas 预算
+      const [coin] = tx.splitCoins(tx.gas, [amount*1_000_000_000])
+      if (!toAddress) {
+        console.error('Transfer address is not set');
+        return;
+      }
+      tx.transferObjects([coin], toAddress);
+      const resData = await wallet.signAndExecuteTransaction({
+        transaction: tx,
+      });
+      console.log(resData.digest)
+      setDigest(resData.digest);
+      console.log(resData)
+      // deal with the response
+    }
+  
+
+  async function createNFT() {
+    if (!wallet.address) {
+      console.error('Wallet address is not available');
+      return;
+    }
+    const suiClient = new SuiClient({ url: getFullnodeUrl('testnet') }); // 可以选择 'mainnet', 'testnet', 'devnet'
+    const senderAddress = wallet.address;
+    const { data: coins } = await suiClient.getCoins({ owner: senderAddress });    
+    const suiCoin = coins.find(coin => coin.coinType === '0x2::sui::SUI' && parseInt(coin.balance) >= 300_000_000);
+    if (!suiCoin) {
+      setStatus('错误: 没有找到足够的 Testnet SUI 币用于支付。请确保您至少有 0.2 SUI 测试币。');
+      setLoading(false);
+      return;
+    }
+
+    const txb = new Transaction();
+    const [coin] = txb.splitCoins(txb.gas, [300_000_000])
+
+    txb.setSender(wallet.address);
+    txb.setGasBudget(10_000_000);
+
+    const paymentCoin = txb.object(coin);
+    const feeConfigObjectId = txb.object(feeConfigAddress);
+    console.log(parseInt(suiCoin.balance));
+    console.log(suiCoin.coinObjectId);
+
+    const contractModule = "display_nft";
+    const contractMethod = "mint"; 
+    const nftName = "Mark NFT0807"; // 修改 nftName 的值
+    const nftImgUrl = "https://soldev.club/static/resource/icon-512.png"; // 修改 nftImgUrl 的值
+
+    txb.moveCall({
+      target: `${contractAddress}::${contractModule}::${contractMethod}`,
+      arguments: [
+        paymentCoin,
+        txb.pure.string(nftName),
+        txb.pure.string(nftImgUrl),
+        feeConfigObjectId,
+      ],
+    });
+
+  console.log("nftName:", "Mark Demo NFT");
+  console.log("nftImgUrl:", nftImgUrl);
+
+    const resData = await wallet.signAndExecuteTransaction({
+      transaction: txb,
+      
+    });
+    console.log(resData.digest)
+    setDigest(resData.digest);
+    return txb;
+  }
+
+  async function updateFeeNFT() {
+    if (!wallet.address) {
+      console.error('Wallet address is not available');
+      return;
+    }
+
+    const txb = new Transaction();
+    txb.setSender(wallet.address);
+    txb.setGasBudget(10_000_000);
+    const feeConfigObjectId = txb.object(feeConfigAddress);
+    const adminCapObjectId = txb.object(adminCapAddress);
+
+    const contractModule = "display_nft";
+    const contractMethod = "update_fee"; 
+
+    console.log("updateFeeNFT");
+    txb.moveCall({
+      target: `${contractAddress}::${contractModule}::${contractMethod}`,
+      arguments: [
+        adminCapObjectId,        
+        feeConfigObjectId,
+        txb.pure.u64(300_000_000)
+      ],
+    });
+    const resData = await wallet.signAndExecuteTransaction({
+      transaction: txb,
+      
+    });
+    setDigest(resData.digest);
+    console.log(resData.digest);
+
+  }
+  useEffect(() => {
+
+    const user = localStorage.getItem('user');
+    if (user) {
+      console.log('User data:', JSON.parse(user));
+      let userInfo = JSON.parse(user) as UserInfoDTO;
+      setUserInfo(userInfo);
+      console.log('User Public Key:', userInfo.public_key);
+      console.log('User Nickname:', userInfo.nickname);
+      console.log('User Token:', userInfo.token);
+      console.log('Is Admin:', userInfo.is_admin);
+      setLoading(false);
+    } else {
+      console.log('No user data found');
+      setError(new Error('No user data found'));
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <div className="nft-container">
+      <div className="nft-header">
+      <p>appName:{appName}</p>
+        <p>suiScanUrl:{suiScanUrl}</p>
+        <p>合约地址:{contractAddress}</p>          
+        <p>feeConfig地址:{feeConfigAddress}</p>
+        <p>SUI Price:{suiPrivce}USD</p>
+      </div>
+
+      <div className="transaction-section">
+        <div className="form-group">
+          <span className="gradient">Current chain of wallet: </span>
+          {wallet.chain?.name}
+        </div>
+
+        <div className="form-group">
+          <span className="gradient">Transfer to address: </span>
+          <Input 
+            type="text"
+            value={toAddress || ''}
+            onChange={(e) => setToAddress(e.target.value)}
+            placeholder="Enter address"
+            className="address-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <InputNumber<string>
+            style={{ width: '100%' }}
+            defaultValue="0.5"
+            min="0"
+            max="10"
+            step="0.01"
+            onChange={(value) => setAmount(value ? Number(value) : 0)}
+            stringMode
+          />
+        </div>
+
+        <button className="btn btn-primary" onClick={() => performTransaction()}>
+          Perform Transaction
+        </button>
+        <button className='btn btn-primary' onClick={() => createNFT()}>
+          Create NFT
+        </button>
+        <button className='btn btn-primary' onClick={() => updateFeeNFT()}>
+          Update Fee NFT
+        </button>
+        
+      </div>
+
+      {digest && (
+        <div className="transaction-section">
+          <p>Transaction Digest: {digest}</p>
+          <a 
+            className="transaction-link" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            href={`${suiScanUrl}tx/${digest}`}
+          >
+            View on Suiscan
+          </a>
+        </div>
+      )}
+
+      <div className="data-display">
+        <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+      </div>
+      <div>
+      {status && (
+        <p className={`mt-6 text-center text-sm ${status.includes('错误') ? 'text-red-600' : 'text-green-600'} font-medium bg-gray-100 p-3 rounded-lg`}>
+          {status}
+        </p>
+      )}
+      </div>
+    </div>
+  );
+};
+
+export default NFT;
