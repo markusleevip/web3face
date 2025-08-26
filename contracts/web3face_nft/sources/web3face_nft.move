@@ -8,7 +8,7 @@ module web3face_nft::web3face_nft {
 
 
 
-    const FEE_RECIPIENT: address = @0x61be9edeb2d47ca75ad15573cc50bbc2ae1cd03dfcb09986a7b788ff81f6b436;
+    const FEE_RECIPIENT: address = @0xb2cd0ac7b0f69b4b91515ea7ea8381918ec4fbf63b17b6645d4bc2b129025218;
      // 设置费用为 0.2 SUI
     const INIT_FEE_AMOUNT: u64 = 200_000_000;
 

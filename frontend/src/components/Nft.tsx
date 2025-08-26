@@ -149,7 +149,9 @@ const NFT = () => {
         <p>feeConfig地址:{feeConfigAddress}</p>
       </div>
 
+      {/* Create NFT Section */}
       <div className="transaction-section">
+        <h3 className="section-title">Create NFT</h3>
         <div className="form-group">
           <span className="gradient">Current chain of wallet: </span>
           {wallet.chain?.name}
@@ -161,10 +163,9 @@ const NFT = () => {
             type="text"
             value={nftName || ''}
             onChange={(e) => setNftName(e.target.value)}
-            placeholder="Enter NFT Image URL"
+            placeholder="Enter NFT Name"
             className="img-input"
           />
-
         </div>
 
         <div className="form-group">
@@ -177,9 +178,17 @@ const NFT = () => {
             className="img-input"
           />
         </div>
+        
+        <button className='btn btn-primary' onClick={() => createNFT()}>
+          Create NFT
+        </button>
+      </div>
 
+      {/* Update Fee NFT Section */}
+      <div className="transaction-section">
+        <h3 className="section-title">Update Fee NFT</h3>
         <div className="form-group">
-          <span className="gradient">Config fee: </span>
+          <span className="gradient">Config fee (SUI): </span>
           <InputNumber<string>
             style={{ width: '100%' }}
             defaultValue="0.5"
@@ -190,13 +199,9 @@ const NFT = () => {
             stringMode
           />
         </div>
-        <button className='btn btn-primary' onClick={() => createNFT()}>
-          Create NFT
-        </button>
         <button className='btn btn-primary' onClick={() => updateFeeNFT()}>
           Update Fee NFT
         </button>
-        
       </div>
 
       {digest && (
