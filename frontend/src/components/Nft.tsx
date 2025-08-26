@@ -18,14 +18,11 @@ const appName = import.meta.env.VITE_APP_NAME;
 const fee = 200_000_000;
 const ONE_SUI_IN_LAMPORTS = 1_000_000_000;
 const NFT = () => {
-  const [data, setData] = useState(null);
   const [status, setStatus] = useState('');
 
   const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
   const [digest, setDigest] = useState<string | null>(null);
   
-  const [suiPrivce, setSuiPrice] = useState<number | null>(null);
-  const [toAddress, setToAddress] = useState<string | null>(null);
   const [nftName,setNftName] = useState<string>('Demo NFT');
   const [nftImgUrl,setNftImgUrl] = useState<string>('https://web3face.xyz/static/resource/icon-512.png');
 
