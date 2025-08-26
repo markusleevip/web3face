@@ -147,7 +147,6 @@ const NFT = () => {
         <p>suiScanUrl:{suiScanUrl}</p>
         <p>合约地址:{contractAddress}</p>          
         <p>feeConfig地址:{feeConfigAddress}</p>
-        <p>SUI Price:{suiPrivce}USD</p>
       </div>
 
       <div className="transaction-section">
