@@ -14,6 +14,9 @@ const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
 const feeConfigAddress = import.meta.env.VITE_FEE_CONFIG_ADDRESS;
 const adminCapAddress = import.meta.env.VITE_ADMIN_CAP_ADDRESS;
 const appName = import.meta.env.VITE_APP_NAME;
+
+const fee = 200_000_000;
+const ONE_SUI_IN_LAMPORTS = 1_000_000_000;
 const NFT = () => {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState('');
@@ -23,36 +26,14 @@ const NFT = () => {
   
   const [suiPrivce, setSuiPrice] = useState<number | null>(null);
   const [toAddress, setToAddress] = useState<string | null>(null);
+  const [nftName,setNftName] = useState<string>('Demo NFT');
+  const [nftImgUrl,setNftImgUrl] = useState<string>('https://web3face.xyz/static/resource/icon-512.png');
+
   // amount: number = 1 * 1_000_000_000; // 1 SUI in lamports
   const [amount, setAmount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const wallet = useWallet();
-
-
-  async function performTransaction() {
-      if (!wallet.address) {
-        console.error('Wallet address is not available');
-        return;
-      }
-      const tx = new Transaction()
-      tx.setSender(wallet.address);
-      tx.setGasBudget(100_000_000); // 设置 gas 预算
-      const [coin] = tx.splitCoins(tx.gas, [amount*1_000_000_000])
-      if (!toAddress) {
-        console.error('Transfer address is not set');
-        return;
-      }
-      tx.transferObjects([coin], toAddress);
-      const resData = await wallet.signAndExecuteTransaction({
-        transaction: tx,
-      });
-      console.log(resData.digest)
-      setDigest(resData.digest);
-      console.log(resData)
-      // deal with the response
-    }
-  
 
   async function createNFT() {
     if (!wallet.address) {
@@ -62,7 +43,7 @@ const NFT = () => {
     const suiClient = new SuiClient({ url: getFullnodeUrl('testnet') }); // 可以选择 'mainnet', 'testnet', 'devnet'
     const senderAddress = wallet.address;
     const { data: coins } = await suiClient.getCoins({ owner: senderAddress });    
-    const suiCoin = coins.find(coin => coin.coinType === '0x2::sui::SUI' && parseInt(coin.balance) >= 300_000_000);
+    const suiCoin = coins.find(coin => coin.coinType === '0x2::sui::SUI' && parseInt(coin.balance) >= fee);
     if (!suiCoin) {
       setStatus('错误: 没有找到足够的 Testnet SUI 币用于支付。请确保您至少有 0.2 SUI 测试币。');
       setLoading(false);
@@ -70,7 +51,7 @@ const NFT = () => {
     }
 
     const txb = new Transaction();
-    const [coin] = txb.splitCoins(txb.gas, [300_000_000])
+    const [coin] = txb.splitCoins(txb.gas, [fee])
 
     txb.setSender(wallet.address);
     txb.setGasBudget(10_000_000);
@@ -80,10 +61,8 @@ const NFT = () => {
     console.log(parseInt(suiCoin.balance));
     console.log(suiCoin.coinObjectId);
 
-    const contractModule = "display_nft";
-    const contractMethod = "mint"; 
-    const nftName = "Mark NFT0807"; // 修改 nftName 的值
-    const nftImgUrl = "https://soldev.club/static/resource/icon-512.png"; // 修改 nftImgUrl 的值
+    const contractModule = "web3face_nft";
+    const contractMethod = "mint";     
 
     txb.moveCall({
       target: `${contractAddress}::${contractModule}::${contractMethod}`,
@@ -95,7 +74,7 @@ const NFT = () => {
       ],
     });
 
-  console.log("nftName:", "Mark Demo NFT");
+  console.log("nftName:", nftName);
   console.log("nftImgUrl:", nftImgUrl);
 
     const resData = await wallet.signAndExecuteTransaction({
@@ -119,7 +98,7 @@ const NFT = () => {
     const feeConfigObjectId = txb.object(feeConfigAddress);
     const adminCapObjectId = txb.object(adminCapAddress);
 
-    const contractModule = "display_nft";
+    const contractModule = "web3face_nft";
     const contractMethod = "update_fee"; 
 
     console.log("updateFeeNFT");
@@ -128,7 +107,7 @@ const NFT = () => {
       arguments: [
         adminCapObjectId,        
         feeConfigObjectId,
-        txb.pure.u64(300_000_000)
+        txb.pure.u64(ONE_SUI_IN_LAMPORTS * amount)
       ],
     });
     const resData = await wallet.signAndExecuteTransaction({
@@ -178,17 +157,30 @@ const NFT = () => {
         </div>
 
         <div className="form-group">
-          <span className="gradient">Transfer to address: </span>
+          <span className="gradient">NFT Name: </span>
           <Input 
             type="text"
-            value={toAddress || ''}
-            onChange={(e) => setToAddress(e.target.value)}
-            placeholder="Enter address"
-            className="address-input"
+            value={nftName || ''}
+            onChange={(e) => setNftName(e.target.value)}
+            placeholder="Enter NFT Image URL"
+            className="img-input"
+          />
+
+        </div>
+
+        <div className="form-group">
+          <span className="gradient">NFT Image URL: </span>
+          <Input 
+            type="text"
+            value={nftImgUrl || ''}
+            onChange={(e) => setNftImgUrl(e.target.value)}
+            placeholder="Enter NFT Image URL"
+            className="img-input"
           />
         </div>
 
         <div className="form-group">
+          <span className="gradient">Config fee: </span>
           <InputNumber<string>
             style={{ width: '100%' }}
             defaultValue="0.5"
@@ -199,10 +191,6 @@ const NFT = () => {
             stringMode
           />
         </div>
-
-        <button className="btn btn-primary" onClick={() => performTransaction()}>
-          Perform Transaction
-        </button>
         <button className='btn btn-primary' onClick={() => createNFT()}>
           Create NFT
         </button>

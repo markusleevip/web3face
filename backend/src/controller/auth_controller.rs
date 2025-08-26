@@ -13,6 +13,7 @@ async fn auth(Json(login_request): Json<LoginRequest>) -> Json<Result> {
 
     let sign_text = &login_request.sign_text;
     let address_str = &login_request.public_key;
+    println!("Received login request for address: {}", &login_request.sign);
     let sign = Signature::from_str(&login_request.sign).unwrap();
     let address = SuiAddress::from_str(address_str.trim_start_matches("0x")).unwrap();
     let intent_text = IntentMessage::new(Intent::personal_message(), sign_text);
