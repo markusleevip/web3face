@@ -1,15 +1,16 @@
 use crate::domain::dto::Result;
-use crate::domain::{LoginRequest,LoginResponse};
+use crate::domain::{config, LoginRequest, LoginResponse};
 use crate::domain::enums::ResultCode;
 use crate::jwt::{generate_token, Claims};
 use spring_web::{axum::Json, route};
+use spring_web::extractor::Config;
 use std::str::FromStr;
 use sui_sdk::types::base_types::SuiAddress;
 use sui_sdk::types::crypto::{Signature,SuiSignature};
 use shared_crypto::intent::{Intent, IntentMessage};
 
 #[route("/auth", method = "POST")]
-async fn auth(Json(login_request): Json<LoginRequest>) -> Json<Result> {
+async fn auth(Config(config) : Config<config::CustomConfig>, Json(login_request): Json<LoginRequest>) -> Json<Result> {
 
     let sign_text = &login_request.sign_text;
     let address_str = &login_request.public_key;
@@ -18,6 +19,13 @@ async fn auth(Json(login_request): Json<LoginRequest>) -> Json<Result> {
     let address = SuiAddress::from_str(address_str.trim_start_matches("0x")).unwrap();
     let intent_text = IntentMessage::new(Intent::personal_message(), sign_text);
     let res = sign.verify_secure(&intent_text, address, sui_types::crypto::SignatureScheme::ED25519);
+    let mut is_admin = false;
+    config.admin_ids.iter().for_each(|key| {
+        if key == &login_request.public_key {
+            println!("User is admin");
+            is_admin = true;
+        }
+    });
     match res {
         Ok(_) => {
             println!("Signature verification SUCCESS for address: {}", address_str);
@@ -26,7 +34,7 @@ async fn auth(Json(login_request): Json<LoginRequest>) -> Json<Result> {
                 public_key: address_str.clone(),
                 nickname: "guest".to_string(),
                 token,
-                is_admin: false,
+                is_admin: is_admin,
             };
             Json(Result::success(serde_json::to_value(login_response).unwrap()).into())            
         }
