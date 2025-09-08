@@ -40,3 +40,38 @@
 .auth-connect button:hover {
   background: rgba(0, 212, 255, 0.1);
 }
+
+.user-info {
+  margin: 1.5rem 0;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.user-info p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+}
+
+.admin-badge {
+  display: inline-block;
+  background: #ff6b6b;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.logout-btn {
+  background: #ff6b6b !important;
+  border-color: #ff6b6b !important;
+}
+
+.logout-btn:hover {
+  background: #ff5252 !important;
+  border-color: #ff5252 !important;
+}

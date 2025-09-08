@@ -1,6 +1,7 @@
-import { useState }  from 'react';
+import { useState, useEffect }  from 'react';
 
 import type { LoginRequest } from '../domain/request';
+import type { UserInfoDTO } from '../domain/dto';
 
 import {
   useWallet,
@@ -14,7 +15,21 @@ import axios from 'axios';
 
 const Auth = () => {
   const [signature, setSignature] = useState('');
+  const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
   const wallet = useWallet();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUserInfo(JSON.parse(userData));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUserInfo(null);
+    window.location.reload();
+  };
 
 
   const handleSign = async () => {
@@ -38,7 +53,9 @@ const Auth = () => {
         .then(response => {
           console.log('Login successful:', response.data);
           if(response.data.code == 200 ) {
-            localStorage.setItem('user', JSON.stringify(response.data.data));          
+            localStorage.setItem('user', JSON.stringify(response.data.data));
+            // 重新加载页面以更新导航栏
+            window.location.reload();
           }
         })
         .catch(error => {
@@ -53,13 +70,32 @@ const Auth = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Login with Wallet</h2>
-        <Button 
-          type="primary" 
-          onClick={handleSign}
-          disabled={!wallet.connected}
-        >          Sign with Sui Wallet
-        </Button>
+        {userInfo ? (
+          <>
+            <h2>Welcome Back!</h2>
+            <div className="user-info">
+              <p>Nickname: {userInfo.nickname}</p>
+            </div>
+            <Button 
+              type="primary" 
+              onClick={handleLogout}
+              className="logout-btn"
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <h2>Login with Wallet</h2>
+            <Button 
+              type="primary" 
+              onClick={handleSign}
+              disabled={!wallet.connected}
+            >
+              Sign with Sui Wallet
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

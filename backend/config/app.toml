@@ -2,6 +2,10 @@
 port = 8000
 [web.middlewares]
 static = { enable = true }
+
+[config]
+admin_ids = []
+sui_network = "https://fullnode.testnet.sui.io:443"
 [logger.file]
 enable = true                              # 是否将日志写入文件
 non_blocking = true                         # 是否启用非阻塞方式写入，默认开启

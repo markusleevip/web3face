@@ -4,6 +4,7 @@ import NFT from './components/Nft';
 import Blog from './components/Blog';
 import Support from './components/Support';
 import Auth from './components/Auth';
+import AdminSettings from './components/AdminSettings';
 import GameNav from './components/GameNav';
 import GameFooter from './components/GameFooter';
 
@@ -21,6 +22,7 @@ const App: React.FC = () => {
         {current === 'blog' && <Blog />}
         {current === 'support' && <Support />}
         {current === 'auth' && <Auth />}
+        {current === 'admin' && <AdminSettings />}
       </main>
       <GameFooter />
     </div>

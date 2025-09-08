@@ -1,10 +1,20 @@
 // import React, { useState } from 'react';
 import {ConnectButton} from '@suiet/wallet-kit';
+import { useEffect, useState } from 'react';
+import type { UserInfoDTO } from '../domain/dto';
 
 import './GameNav.css';
 import logo from '../assets/logo.png';
 
 const GameNav = ({ current, setCurrent }: { current: string, setCurrent: (key: string) => void }) => {
+  const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUserInfo(JSON.parse(userData));
+    }
+  }, []);
   return (
     <nav className="game-nav">
       <div  className="nav-logo" >
@@ -38,8 +48,16 @@ const GameNav = ({ current, setCurrent }: { current: string, setCurrent: (key: s
         className={`nav-item ${current === 'auth' ? 'active' : ''}`}
         onClick={() => setCurrent('auth')}
       >
-        Login
+        {userInfo ? 'Logout' : 'Login'}
       </div>
+      {userInfo?.is_admin && (
+        <div
+          className={`nav-item ${current === 'admin' ? 'active' : ''}`}
+          onClick={() => setCurrent('admin')}
+        >
+          Settings
+        </div>
+      )}
       <div className="nav-connect">
         <ConnectButton />
       </div>

@@ -83,38 +83,6 @@ const NFT = () => {
     return txb;
   }
 
-  async function updateFeeNFT() {
-    if (!wallet.address) {
-      console.error('Wallet address is not available');
-      return;
-    }
-
-    const txb = new Transaction();
-    txb.setSender(wallet.address);
-    txb.setGasBudget(10_000_000);
-    const feeConfigObjectId = txb.object(feeConfigAddress);
-    const adminCapObjectId = txb.object(adminCapAddress);
-
-    const contractModule = "web3face_nft";
-    const contractMethod = "update_fee"; 
-
-    console.log("updateFeeNFT");
-    txb.moveCall({
-      target: `${contractAddress}::${contractModule}::${contractMethod}`,
-      arguments: [
-        adminCapObjectId,        
-        feeConfigObjectId,
-        txb.pure.u64(ONE_SUI_IN_LAMPORTS * amount)
-      ],
-    });
-    const resData = await wallet.signAndExecuteTransaction({
-      transaction: txb,
-      
-    });
-    setDigest(resData.digest);
-    console.log(resData.digest);
-
-  }
   useEffect(() => {
 
     const user = localStorage.getItem('user');
@@ -181,25 +149,6 @@ const NFT = () => {
         </button>
       </div>
 
-      {/* Update Fee NFT Section */}
-      <div className="transaction-section">
-        <h3 className="section-title">Update Fee NFT</h3>
-        <div className="form-group">
-          <span className="gradient">Config fee (SUI): </span>
-          <InputNumber<string>
-            style={{ width: '100%' }}
-            defaultValue="0.5"
-            min="0"
-            max="10"
-            step="0.01"
-            onChange={(value) => setAmount(value ? Number(value) : 0)}
-            stringMode
-          />
-        </div>
-        <button className='btn btn-primary' onClick={() => updateFeeNFT()}>
-          Update Fee NFT
-        </button>
-      </div>
 
       {digest && (
         <div className="transaction-section">
