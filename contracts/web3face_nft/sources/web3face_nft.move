@@ -4,7 +4,8 @@ module web3face_nft::web3face_nft {
     use sui::package;
     use sui::display;
     use sui::coin::{Self, Coin};
-    use sui::sui::SUI; 
+    use sui::sui::SUI;
+    use sui::object::{Self};
 
 
 
@@ -56,7 +57,7 @@ module web3face_nft::web3face_nft {
 
         display::update_version(&mut display);
 
-                // 创建 AdminCap 和 FeeConfig 对象
+        // 创建 AdminCap 和 FeeConfig 对象
         let admin_cap = AdminCap { id: object::new(ctx) };
         // 初始手续费
         let fee_config = FeeConfig { id: object::new(ctx), fee_amount: INIT_FEE_AMOUNT };
