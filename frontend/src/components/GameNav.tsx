@@ -24,8 +24,8 @@ const GameNav = ({ current, setCurrent }: { current: string, setCurrent: (key: s
         className={`nav-item ${current === 'home' ? 'active' : ''}`}
         onClick={() => setCurrent('home')}
       >
-        Home
-      </div>      
+        Promotion
+      </div>
        <div 
         className={`nav-item ${current === 'nft' ? 'active' : ''}`}
         onClick={() => setCurrent('nft')}
@@ -37,7 +37,13 @@ const GameNav = ({ current, setCurrent }: { current: string, setCurrent: (key: s
         onClick={() => setCurrent('blog')}
       >
         Blog
-      </div>      
+      </div>
+      <div 
+        className={`nav-item ${current === 'advertiser' ? 'active' : ''}`}
+        onClick={() => setCurrent('advertiser')}
+      >
+        Advertiser
+      </div>
       <div
         className={`nav-item ${current === 'support' ? 'active' : ''}`}
         onClick={() => setCurrent('support')}

@@ -6,4 +6,5 @@ use spring::config::Configurable;
 pub struct CustomConfig {
     pub admin_ids: Vec<String>,
     pub sui_network: String,
+    pub api_x_bearer_token: String,
 }

@@ -52,11 +52,12 @@ const Auth = () => {
       axios.post('/api/auth', loginRequest)      
         .then(response => {
           console.log('Login successful:', response.data);
-          if(response.data.code == 200 ) {
-            localStorage.setItem('user', JSON.stringify(response.data.data));
-            // 重新加载页面以更新导航栏
-            window.location.reload();
-          }
+        if(response.data.code == 200 ) {
+          localStorage.setItem('user', JSON.stringify(response.data.data));
+          localStorage.setItem('token', response.data.data.app_access_token);
+          // 重新加载页面以更新导航栏
+          window.location.reload();
+        }
         })
         .catch(error => {
           console.error('Login failed:', error);

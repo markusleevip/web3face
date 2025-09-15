@@ -6,6 +6,7 @@ static = { enable = true }
 [config]
 admin_ids = []
 sui_network = "https://fullnode.testnet.sui.io:443"
+api_x_bearer_token = "AAAAAAAAAAAAAAAAAAAAAKdW4AEAAAAAq"
 [logger.file]
 enable = true                              # 是否将日志写入文件
 non_blocking = true                         # 是否启用非阻塞方式写入，默认开启
