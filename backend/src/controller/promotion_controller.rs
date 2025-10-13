@@ -134,6 +134,7 @@ let mut tweet_info = TweetInfo {
 pub struct CreatePromotionTaskRequest {
     pub platform: String,
     pub url: String,
+    pub name: String,
     pub title: String,
     pub description: String,
     pub reward: u64,
@@ -160,6 +161,7 @@ async fn create_promotion_task(
         id: task_id.clone(),
         platform: request.platform,
         url: request.url,
+        name: request.name,
         title: request.title,
         description: request.description,
         reward: request.reward,
@@ -196,6 +198,7 @@ async fn get_promotion_tasks() -> Json<Result> {
         id: "test-1".to_string(),
         platform: "x".to_string(),
         url: "https://x.com/test/status/1234567890".to_string(),
+        name: "X平台内容推广".to_string(),
         title: "测试推广任务".to_string(),
         description: "这是一个测试推广任务".to_string(),
         reward: 50,

@@ -73,6 +73,7 @@ pub struct PromotionTask {
     pub id: String,
     pub platform: String,
     pub url: String,
+    pub name: String,
     pub title: String,
     pub description: String,
     pub reward: u64,

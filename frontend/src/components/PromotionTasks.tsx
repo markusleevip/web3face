@@ -4,6 +4,7 @@ import axios from 'axios';
 
 interface PromotionTask {
   id: number;
+  name: string;
   title: string;
   description: string;
   platform: 'x' | 'telegram' | 'discord' | 'instagram';
@@ -34,6 +35,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
         if (response.data.code === 200) {
           const apiTasks = response.data.data.map((task: any) => ({
             id: parseInt(task.id.replace(/\D/g, '')) || Math.floor(Math.random() * 1000),
+            name: task.name || task.title,
             title: task.title,
             description: task.description,
             platform: task.platform as 'x' | 'telegram' | 'discord' | 'instagram',
@@ -52,6 +54,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
         const mockTasks: PromotionTask[] = [
           {
             id: 1,
+            name: 'X平台内容推广',
             title: 'X平台内容推广',
             description: '在X平台发布关于我们产品的推文，需要包含指定标签和链接',
             platform: 'x',
@@ -146,7 +149,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
                 {getPlatformIcon(task.platform)}
               </div>
               <div className="task-info">
-                <h3 className="task-title">{task.title}</h3>
+                <h3 className="task-title">{task.name}</h3>
                 {getStatusBadge(task.status)}
               </div>
             </div>
@@ -156,7 +159,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
             <div className="task-details">
               <div className="reward">
                 <span className="label">奖励:</span>
-                <span className="value">{task.reward} USDT</span>
+                <span className="value">{task.reward} USDC</span>
               </div>
               <div className="deadline">
                 <span className="label">截止:</span>

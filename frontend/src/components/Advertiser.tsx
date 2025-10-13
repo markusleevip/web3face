@@ -8,7 +8,9 @@ const Advertiser = () => {
   const [platform, setPlatform] = useState('x');
   const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
 
+  const [name, setName] = useState('');
   const [url, setUrl] = useState('');
+  const [reward, setReward] = useState(50);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -44,9 +46,10 @@ const Advertiser = () => {
       const promotionTaskRequest = {
         platform: platform,
         url: url,
-        title: `${platform.toUpperCase()} 推广任务`,
+        name: name,
+        title: name || `${platform.toUpperCase()} 推广任务`,
         description: `推广内容: ${url}`,
-        reward: 50, // 默认奖励50 SUI
+        reward: reward, // 使用用户输入的奖励金额
         deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7天后
         requirements: [
           '至少100个粉丝',
@@ -114,6 +117,22 @@ const Advertiser = () => {
         </div>
 
         <div className="form-group">
+          <label htmlFor="name">Task Name</label>
+          <input
+            type="text"
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="form-control"
+            placeholder="Enter task name"
+            required
+          />
+          <small className="form-text">
+            Give your promotion task a name
+          </small>
+        </div>
+
+        <div className="form-group">
           <label htmlFor="url">Post URL</label>
           <input
             type="url"
@@ -126,6 +145,23 @@ const Advertiser = () => {
           />
           <small className="form-text">
             Enter the URL of the post you want to promote
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="reward">Reward (USDC)</label>
+          <input
+            type="number"
+            id="reward"
+            value={reward}
+            onChange={(e) => setReward(Number(e.target.value))}
+            className="form-control"
+            placeholder="50"
+            min="1"
+            required
+          />
+          <small className="form-text">
+            Set the reward amount in USDC
           </small>
         </div>
 
