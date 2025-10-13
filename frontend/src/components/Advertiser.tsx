@@ -19,17 +19,18 @@ const Advertiser = () => {
     setError('');
     setSuccess('');
 
-
-
     try {
       if (!userInfo) {
         setError('User not authenticated');
         setLoading(false);
         return;
       }
+
+      // 首先获取推文信息
       console.log('Creating promotion task for platform:', platform, 'with URL:', url);
       console.log('Using token:', userInfo.token);
-      const response = await axios.post(`/api/promotion/${platform}`, 
+      
+      const tweetInfoResponse = await axios.post(`/api/promotion/${platform}`, 
         { url },
         {
           headers: {
@@ -39,8 +40,34 @@ const Advertiser = () => {
         }
       );
 
+      // 然后创建推广任务
+      const promotionTaskRequest = {
+        platform: platform,
+        url: url,
+        title: `${platform.toUpperCase()} 推广任务`,
+        description: `推广内容: ${url}`,
+        reward: 50, // 默认奖励50 SUI
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7天后
+        requirements: [
+          '至少100个粉丝',
+          '内容包含指定标签',
+          '保持内容至少24小时'
+        ],
+        created_by: userInfo.public_key
+      };
+
+      const createTaskResponse = await axios.post('/api/promotion/tasks', 
+        promotionTaskRequest,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${userInfo.token}`
+          }
+        }
+      );
+
       setSuccess('Promotion task created successfully!');
-      console.log('Promotion task created:', response.data);
+      console.log('Promotion task created:', createTaskResponse.data);
       setUrl('');
     } catch (error: any) {
       setError(error.response?.data?.message || 'Failed to create promotion task');

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './PromotionTasks.css';
+import axios from 'axios';
 
 interface PromotionTask {
   id: number;
@@ -25,69 +26,52 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
     setCurrent('promotion-detail', taskId);
   };
 
-  // 模拟数据 - 实际项目中应该从API获取
+  // 从API获取真实数据
   useEffect(() => {
-    const mockTasks: PromotionTask[] = [
-      {
-        id: 1,
-        title: 'X平台内容推广',
-        description: '在X平台发布关于我们产品的推文，需要包含指定标签和链接',
-        platform: 'x',
-        reward: 50,
-        status: 'active',
-        deadline: '2025-09-15',
-        requirements: [
-          '至少100个粉丝',
-          '推文包含#Web3Face标签',
-          '保持推文至少24小时'
-        ]
-      },
-      {
-        id: 2,
-        title: 'Telegram群组推广',
-        description: '在相关Telegram群组中分享我们的项目信息',
-        platform: 'telegram',
-        reward: 30,
-        status: 'active',
-        deadline: '2025-09-20',
-        requirements: [
-          '群组成员至少500人',
-          '分享后截图证明',
-          '不能是垃圾广告群组'
-        ]
-      },
-      {
-        id: 3,
-        title: 'Discord社区建设',
-        description: '在我们的Discord服务器中活跃参与讨论，帮助新成员',
-        platform: 'discord',
-        reward: 20,
-        status: 'active',
-        deadline: '2025-09-25',
-        requirements: [
-          '每日至少发送5条有帮助的消息',
-          '帮助解答新手问题',
-          '保持友好态度'
-        ]
-      },
-      {
-        id: 4,
-        title: 'Instagram内容创作',
-        description: '创建关于我们产品的Instagram帖子或故事',
-        platform: 'instagram',
-        reward: 40,
-        status: 'completed',
-        deadline: '2025-09-10',
-        requirements: [
-          '至少500个粉丝',
-          '高质量图片或视频',
-          '包含产品链接'
-        ]
+    const fetchPromotionTasks = async () => {
+      try {
+        const response = await axios.get('/api/promotion/tasks');
+        if (response.data.code === 200) {
+          const apiTasks = response.data.data.map((task: any) => ({
+            id: parseInt(task.id.replace(/\D/g, '')) || Math.floor(Math.random() * 1000),
+            title: task.title,
+            description: task.description,
+            platform: task.platform as 'x' | 'telegram' | 'discord' | 'instagram',
+            reward: task.reward,
+            status: task.status as 'active' | 'completed' | 'pending',
+            deadline: task.deadline,
+            requirements: task.requirements
+          }));
+          setTasks(apiTasks);
+        } else {
+          console.error('Failed to fetch promotion tasks:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching promotion tasks:', error);
+        // 如果API调用失败，使用模拟数据作为后备
+        const mockTasks: PromotionTask[] = [
+          {
+            id: 1,
+            title: 'X平台内容推广',
+            description: '在X平台发布关于我们产品的推文，需要包含指定标签和链接',
+            platform: 'x',
+            reward: 50,
+            status: 'active',
+            deadline: '2025-09-15',
+            requirements: [
+              '至少100个粉丝',
+              '推文包含#Web3Face标签',
+              '保持推文至少24小时'
+            ]
+          }
+        ];
+        setTasks(mockTasks);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
 
-    setTasks(mockTasks);
-    setLoading(false);
+    fetchPromotionTasks();
   }, []);
 
   const filteredTasks = tasks.filter(task => 

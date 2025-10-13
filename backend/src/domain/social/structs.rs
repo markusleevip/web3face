@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TweetInfo {
     pub id: String,
     pub text: String,
@@ -66,4 +66,20 @@ pub struct UserPublicMetrics {
     pub tweet_count: u64,
     pub like_count: u64,
     pub media_count: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct PromotionTask {
+    pub id: String,
+    pub platform: String,
+    pub url: String,
+    pub title: String,
+    pub description: String,
+    pub reward: u64,
+    pub status: String,
+    pub deadline: String,
+    pub requirements: Vec<String>,
+    pub created_at: String,
+    pub created_by: String,
+    pub tweet_info: Option<TweetInfo>,
 }
