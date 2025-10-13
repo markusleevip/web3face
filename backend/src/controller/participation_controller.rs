@@ -55,7 +55,6 @@ async fn get_user_participations() -> Json<Result> {
     // 这里需要从JWT token中获取用户信息，暂时使用模拟数据
     let user_public_key = "user_public_key_placeholder".to_string();
 
-
     // 使用迭代器遍历数据库中的所有参与记录
     let mut iter = db_guard.new_iter().unwrap();
     
@@ -73,25 +72,6 @@ async fn get_user_participations() -> Json<Result> {
             }
         }
     }
-
-    
-    // let test_participation = TaskParticipation {
-    //     id: "participation-test-1".to_string(),
-    //     task_id: "test-1".to_string(),
-    //     user_public_key: user_public_key.clone(),
-    //     submission_url: "https://x.com/user/status/1234567890".to_string(),
-    //     submission_text: "我已经完成了推广任务，请审核".to_string(),
-    //     status: "pending".to_string(),
-    //     submitted_at: SystemTime::now()
-    //         .duration_since(UNIX_EPOCH)
-    //         .unwrap()
-    //         .as_secs()
-    //         .to_string(),
-    //     reviewed_at: None,
-    //     reviewer_notes: None,
-    // };
-    
-    // participations.push(test_participation);
 
     let response = UserParticipationsResponse {
         participations,

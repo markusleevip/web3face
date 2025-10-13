@@ -4,6 +4,7 @@ import axios from 'axios';
 
 interface PromotionTask {
   id: number;
+  originalId: string;
   name: string;
   title: string;
   description: string;
@@ -23,7 +24,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
-  const handleTaskClick = (taskId: number) => {
+  const handleTaskClick = (taskId: number, originalTaskId?: string) => {
     setCurrent('participation-form', taskId);
   };
 
@@ -35,6 +36,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
         if (response.data.code === 200) {
           const apiTasks = response.data.data.map((task: any) => ({
             id: parseInt(task.id.replace(/\D/g, '')) || Math.floor(Math.random() * 1000),
+            originalId: task.id,
             name: task.name || task.title,
             title: task.title,
             description: task.description,
@@ -54,6 +56,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
         const mockTasks: PromotionTask[] = [
           {
             id: 1,
+            originalId: 'test-1',
             name: 'X平台内容推广',
             title: 'X平台内容推广',
             description: '在X平台发布关于我们产品的推文，需要包含指定标签和链接',

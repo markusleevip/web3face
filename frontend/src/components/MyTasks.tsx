@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO } from '../domain/dto';
 import axios from 'axios';
+import './MyTasks.css';
 
 interface TaskParticipation {
   id: string;
@@ -80,11 +81,11 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending':
-        return '待审核';
+        return 'Pending';
       case 'approved':
-        return '已通过';
+        return 'Approved';
       case 'rejected':
-        return '已拒绝';
+        return 'Rejected';
       default:
         return status;
     }
@@ -108,39 +109,39 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
   );
 
   if (loading) {
-    return <div className="loading">加载中...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   return (
     <div className="my-tasks-container">
       <div className="tasks-header">
-        <h1>我的任务</h1>
-        <p>查看您参与的所有推广任务</p>
+        <h1>My Tasks</h1>
+        <p>View all your participation records and track their status</p>
         
         <div className="filter-buttons">
           <button 
             className={filter === 'all' ? 'active' : ''}
             onClick={() => setFilter('all')}
           >
-            全部
+            All
           </button>
           <button 
             className={filter === 'pending' ? 'active' : ''}
             onClick={() => setFilter('pending')}
           >
-            待审核
+            Pending
           </button>
           <button 
             className={filter === 'approved' ? 'active' : ''}
             onClick={() => setFilter('approved')}
           >
-            已通过
+            Approved
           </button>
           <button 
             className={filter === 'rejected' ? 'active' : ''}
             onClick={() => setFilter('rejected')}
           >
-            已拒绝
+            Rejected
           </button>
         </div>
       </div>
@@ -148,12 +149,12 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
       <div className="participations-list">
         {filteredParticipations.length === 0 ? (
           <div className="no-participations">
-            <p>暂无参与记录</p>
+            <p>No participation records found</p>
             <button 
               className="btn-primary"
               onClick={() => setCurrent('promotion-tasks')}
             >
-              去参与任务
+              Join Tasks
             </button>
           </div>
         ) : (
@@ -164,7 +165,7 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
               <div key={participation.id} className="participation-card">
                 <div className="participation-header">
                   <div className="task-info">
-                    <h3>{task ? task.name : '任务信息加载中...'}</h3>
+                    <h3>{task ? task.name : 'Loading task info...'}</h3>
                     <span className={`status-badge ${getStatusClass(participation.status)}`}>
                       {getStatusText(participation.status)}
                     </span>
@@ -179,11 +180,11 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
                 {task && (
                   <div className="task-details">
                     <div className="detail-item">
-                      <span className="label">平台:</span>
+                      <span className="label">Platform:</span>
                       <span className="value">{task.platform.toUpperCase()}</span>
                     </div>
                     <div className="detail-item">
-                      <span className="label">截止时间:</span>
+                      <span className="label">Deadline:</span>
                       <span className="value">{task.deadline}</span>
                     </div>
                   </div>
@@ -191,7 +192,7 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
 
                 <div className="submission-info">
                   <div className="submission-item">
-                    <span className="label">提交链接:</span>
+                    <span className="label">Submission URL:</span>
                     <a 
                       href={participation.submission_url} 
                       target="_blank" 
@@ -202,18 +203,18 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
                     </a>
                   </div>
                   <div className="submission-item">
-                    <span className="label">提交说明:</span>
+                    <span className="label">Submission Text:</span>
                     <p className="submission-text">{participation.submission_text}</p>
                   </div>
                   <div className="submission-item">
-                    <span className="label">提交时间:</span>
+                    <span className="label">Submitted At:</span>
                     <span className="value">{new Date(parseInt(participation.submitted_at) * 1000).toLocaleString()}</span>
                   </div>
                 </div>
 
                 {participation.reviewer_notes && (
                   <div className="review-notes">
-                    <span className="label">审核意见:</span>
+                    <span className="label">Review Notes:</span>
                     <p className="notes-text">{participation.reviewer_notes}</p>
                   </div>
                 )}

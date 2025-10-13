@@ -9,6 +9,7 @@ interface ParticipationFormProps {
 
 interface PromotionTask {
   id: number;
+  originalId?: string;
   name: string;
   title: string;
   description: string;
@@ -40,6 +41,7 @@ const ParticipationForm = ({ taskId, setCurrent }: ParticipationFormProps) => {
           if (foundTask) {
             setTask({
               id: taskId,
+              originalId: foundTask.id,
               name: foundTask.name || foundTask.title,
               title: foundTask.title,
               description: foundTask.description,
@@ -83,8 +85,17 @@ const ParticipationForm = ({ taskId, setCurrent }: ParticipationFormProps) => {
         return;
       }
 
+      if (!task) {
+        setError('任务信息加载失败，请重试');
+        setLoading(false);
+        return;
+      }
+
+      // 获取正确的任务ID - 从任务对象中获取原始ID
+      const correctTaskId = task.originalId || task.id.toString();
+
       const participationRequest = {
-        task_id: taskId.toString(),
+        task_id: correctTaskId,
         submission_url: submissionUrl,
         submission_text: submissionText
       };
