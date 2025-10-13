@@ -185,9 +185,32 @@ async fn create_promotion_task(
 #[route("/promotion/tasks", method = "GET")]
 async fn get_promotion_tasks() -> Json<Result> {
     let db = get_db();
-    let db_guard = db.db.lock().unwrap();
+    let mut db_guard = db.db.lock().unwrap();
 
     let mut tasks: Vec<PromotionTask> = Vec::new();
+
+    
+    // 使用迭代器遍历所有key-value对
+    let mut iter = db_guard.new_iter().unwrap();
+    
+    while let Some((key, value)) = iter.next() {
+        // 尝试将key转换为字符串，如果是有效的UTF-8且看起来像UUID，则尝试解析为任务
+        if let Ok(key_str) = std::str::from_utf8(&key) {
+            // 简单检查key是否可能是UUID格式的任务ID
+            if key_str.len() == 36 || Uuid::parse_str(key_str).is_ok() {
+                match serde_json::from_slice::<PromotionTask>(&value) {
+                    Ok(task) => {
+                        tasks.push(task);
+                    }
+                    Err(e) => {
+                        println!("Failed to deserialize task with key {}: {}", key_str, e);
+                        // 跳过无法反序列化的数据
+                        continue;
+                    }
+                }
+            }
+        }
+    }
     
     // 由于rusty_leveldb的迭代器API比较复杂，我们暂时使用一个简单的方案：
     // 创建一个临时的任务列表用于测试
@@ -215,6 +238,8 @@ async fn get_promotion_tasks() -> Json<Result> {
     };
     
     tasks.push(test_task);
+
+
     
     Json(Result::success(serde_json::to_value(tasks).unwrap()))
 }
