@@ -10,6 +10,8 @@ import AdminSettings from './components/AdminSettings';
 import GameNav from './components/GameNav';
 import GameFooter from './components/GameFooter';
 import Advertiser from './components/Advertiser';
+import ParticipationForm from './components/ParticipationForm';
+import MyTasks from './components/MyTasks';
 
 
 import './App.css';
@@ -32,6 +34,8 @@ const App: React.FC = () => {
       <main>
         {current.page === 'home' && <PromotionTasks setCurrent={handleSetCurrent} />}
         {current.page === 'promotion-detail' && <PromotionDetail taskId={current.taskId} setCurrent={handleSetCurrent} />}
+        {current.page === 'participation-form' && <ParticipationForm taskId={current.taskId!} setCurrent={handleSetCurrent} />}
+        {current.page === 'my-tasks' && <MyTasks setCurrent={handleSetCurrent} />}
         {current.page === 'nft' && <NFT />}
         {current.page === 'blog' && <Blog />}
         {current.page === 'advertiser' && <Advertiser />}

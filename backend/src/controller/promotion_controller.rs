@@ -212,32 +212,30 @@ async fn get_promotion_tasks() -> Json<Result> {
         }
     }
     
-    // 由于rusty_leveldb的迭代器API比较复杂，我们暂时使用一个简单的方案：
-    // 创建一个临时的任务列表用于测试
-    // 在实际应用中，需要实现完整的数据库查询逻辑
+
     
     // 临时解决方案：创建一个测试任务
-    let test_task = PromotionTask {
-        id: "test-1".to_string(),
-        platform: "x".to_string(),
-        url: "https://x.com/test/status/1234567890".to_string(),
-        name: "X平台内容推广".to_string(),
-        title: "测试推广任务".to_string(),
-        description: "这是一个测试推广任务".to_string(),
-        reward: 50,
-        status: "active".to_string(),
-        deadline: "2025-10-20".to_string(),
-        requirements: vec!["至少100个粉丝".to_string(), "包含指定标签".to_string()],
-        created_at: SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_secs()
-            .to_string(),
-        created_by: "test_user".to_string(),
-        tweet_info: None,
-    };
+    // let test_task = PromotionTask {
+    //     id: "test-1".to_string(),
+    //     platform: "x".to_string(),
+    //     url: "https://x.com/test/status/1234567890".to_string(),
+    //     name: "X平台内容推广".to_string(),
+    //     title: "测试推广任务".to_string(),
+    //     description: "这是一个测试推广任务".to_string(),
+    //     reward: 50,
+    //     status: "active".to_string(),
+    //     deadline: "2025-10-20".to_string(),
+    //     requirements: vec!["至少100个粉丝".to_string(), "包含指定标签".to_string()],
+    //     created_at: SystemTime::now()
+    //         .duration_since(UNIX_EPOCH)
+    //         .unwrap()
+    //         .as_secs()
+    //         .to_string(),
+    //     created_by: "test_user".to_string(),
+    //     tweet_info: None,
+    // };
     
-    tasks.push(test_task);
+    // tasks.push(test_task);
 
 
     

@@ -24,7 +24,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
 
   const handleTaskClick = (taskId: number) => {
-    setCurrent('promotion-detail', taskId);
+    setCurrent('participation-form', taskId);
   };
 
   // 从API获取真实数据
