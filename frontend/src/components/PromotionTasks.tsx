@@ -168,7 +168,7 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
             </div>
 
             <div className="requirements">
-              <h4>要求:</h4>
+              <h4>任务要求:</h4>
               <ul>
                 {task.requirements.map((req, index) => (
                   <li key={index}>{req}</li>

@@ -11,6 +11,8 @@ const Advertiser = () => {
   const [name, setName] = useState('');
   const [url, setUrl] = useState('');
   const [reward, setReward] = useState(50);
+  const [requirements, setRequirements] = useState('');
+  const [deadline, setDeadline] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -50,8 +52,8 @@ const Advertiser = () => {
         title: name || `${platform.toUpperCase()} 推广任务`,
         description: `推广内容: ${url}`,
         reward: reward, // 使用用户输入的奖励金额
-        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7天后
-        requirements: [
+        deadline: deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 使用用户输入的截止时间或默认7天后
+        requirements: requirements ? requirements.split('\n').filter(req => req.trim()) : [
           '至少100个粉丝',
           '内容包含指定标签',
           '保持内容至少24小时'
@@ -162,6 +164,39 @@ const Advertiser = () => {
           />
           <small className="form-text">
             Set the reward amount in USDC
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="requirements">Requirements</label>
+          <textarea
+            id="requirements"
+            value={requirements}
+            onChange={(e) => setRequirements(e.target.value)}
+            className="form-control"
+            placeholder="Enter requirements, one per line
+• At least 100 followers
+• Include specific hashtags
+• Keep content for at least 24 hours"
+            rows={4}
+          />
+          <small className="form-text">
+            Enter task requirements, one per line
+          </small>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="deadline">Deadline</label>
+          <input
+            type="date"
+            id="deadline"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            className="form-control"
+            min={new Date().toISOString().split('T')[0]}
+          />
+          <small className="form-text">
+            Set the deadline for this promotion task
           </small>
         </div>
 
