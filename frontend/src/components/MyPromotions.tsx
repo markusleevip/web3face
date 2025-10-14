@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO } from '../domain/dto';
 import axios from 'axios';
+import ParticipantsList from './ParticipantsList';
+import './MyPromotions.css';
 
 interface PromotionTask {
   id: string;
@@ -24,6 +26,8 @@ const MyPromotions = ({ userInfo }: MyPromotionsProps) => {
   const [promotions, setPromotions] = useState<PromotionTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [showParticipants, setShowParticipants] = useState(false);
 
   useEffect(() => {
     const fetchMyPromotions = async () => {
@@ -161,7 +165,13 @@ const MyPromotions = ({ userInfo }: MyPromotionsProps) => {
               </div>
 
               <div className="promotion-actions">
-                <button className="btn-view-participants">
+                <button 
+                  className="btn-view-participants"
+                  onClick={() => {
+                    setSelectedTaskId(promotion.id);
+                    setShowParticipants(true);
+                  }}
+                >
                   View Participants
                 </button>
                 <button className="btn-edit">
@@ -171,6 +181,17 @@ const MyPromotions = ({ userInfo }: MyPromotionsProps) => {
             </div>
           ))}
         </div>
+      )}
+
+      {showParticipants && selectedTaskId && (
+        <ParticipantsList
+          taskId={selectedTaskId}
+          userInfo={userInfo}
+          onClose={() => {
+            setShowParticipants(false);
+            setSelectedTaskId(null);
+          }}
+        />
       )}
     </div>
   );
