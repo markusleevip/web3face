@@ -46,11 +46,14 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
           const userData = JSON.parse(user);
           setUserInfo(userData);
 
+          console.log('Fetching user participations for:', userData.public_key);
+          
           // 获取用户参与的任务
           const participationsResponse = await api.get('/participation/user');
 
           if (participationsResponse.data.code === 200) {
             const userParticipations = participationsResponse.data.data.participations;
+            console.log('User participations:', userParticipations);
             setParticipations(userParticipations);
 
             // 获取所有任务信息
@@ -111,8 +114,8 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
   return (
     <div className="my-tasks-container">
       <div className="tasks-header">
-        <h1>My Tasks</h1>
-        <p>View all your participation records and track their status</p>
+        <h1>My Participations</h1>
+        <p>View all tasks you've participated in and track their review status</p>
         
         <div className="filter-buttons">
           <button 
