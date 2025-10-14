@@ -46,4 +46,12 @@ impl Result {
             data: Value::Null,
         }
     }
+
+    pub fn error(message: String) -> Self {
+        Self {
+            code: ResultCode::Error as i32,
+            message,
+            data: Value::Null,
+        }
+    }
 }

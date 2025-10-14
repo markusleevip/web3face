@@ -81,38 +81,103 @@ async fn get_user_participations(claims: Claims) -> Json<Result> {
     Json(Result::success(serde_json::to_value(response).unwrap()))
 }
 
+#[route("/participation/:participation_id/approve", method = "PUT")]
+async fn approve_participation(
+    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
+    claims: Claims
+) -> Json<Result> {
+    let db = get_db();
+    let mut db_guard = db.db.lock().unwrap();
+
+    // 查找参与记录
+    match db_guard.get(participation_id.as_bytes()) {
+        Some(value) => {
+            let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
+            
+            // 更新状态为已批准
+            participation.status = "approved".to_string();
+            participation.reviewed_at = Some(
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    .to_string()
+            );
+            
+            // 保存更新后的记录
+            let updated_data = serde_json::to_vec(&participation).unwrap();
+            db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
+            
+            Json(Result::success(serde_json::to_value(participation).unwrap()))
+        }
+        None => {
+            Json(Result::error("Participation not found".to_string()))
+        }
+    }
+}
+
+#[route("/participation/:participation_id/reject", method = "PUT")]
+async fn reject_participation(
+    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
+    claims: Claims
+) -> Json<Result> {
+    let db = get_db();
+    let mut db_guard = db.db.lock().unwrap();
+
+    // 查找参与记录
+    match db_guard.get(participation_id.as_bytes()) {
+        Some(value) => {
+            let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
+            
+            // 更新状态为已拒绝
+            participation.status = "rejected".to_string();
+            participation.reviewed_at = Some(
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    .to_string()
+            );
+            
+            // 保存更新后的记录
+            let updated_data = serde_json::to_vec(&participation).unwrap();
+            db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
+            
+            Json(Result::success(serde_json::to_value(participation).unwrap()))
+        }
+        None => {
+            Json(Result::error("Participation not found".to_string()))
+        }
+    }
+}
+
 #[route("/participation/task/:task_id", method = "GET")]
 async fn get_task_participations(
     spring_web::extractor::Path(task_id): spring_web::extractor::Path<String>,
     claims: Claims
 ) -> Json<Result> {
     let db = get_db();
-    let db_guard = db.db.lock().unwrap();
+    let mut db_guard = db.db.lock().unwrap();
 
     let mut participations: Vec<TaskParticipation> = Vec::new();
 
-    // 由于rusty_leveldb的迭代器API比较复杂，我们暂时使用一个简单的方案：
-    // 创建一个临时的参与记录列表用于测试
-    // 在实际应用中，需要实现完整的数据库查询逻辑
+    // 使用迭代器遍历数据库中的所有参与记录
+    let mut iter = db_guard.new_iter().unwrap();
     
-    // 临时解决方案：创建一个测试参与记录
-    let test_participation = TaskParticipation {
-        id: "participation-test-1".to_string(),
-        task_id: task_id.clone(),
-        user_public_key: claims.sub,
-        submission_url: "https://x.com/user/status/1234567890".to_string(),
-        submission_text: "我已经完成了推广任务，请审核".to_string(),
-        status: "pending".to_string(),
-        submitted_at: SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_secs()
-            .to_string(),
-        reviewed_at: None,
-        reviewer_notes: None,
-    };
-    
-    participations.push(test_participation);
+    while let Some((_key, value)) = iter.next() {
+        let value: Vec<u8> = value.to_vec();
+        match serde_json::from_slice::<TaskParticipation>(&value) {
+            Ok(participation) => {
+                // 只返回指定任务的参与记录
+                if participation.task_id == task_id {
+                    participations.push(participation);
+                }
+            }
+            Err(_) => {
+                continue;
+            }
+        }
+    }
 
     let response = UserParticipationsResponse {
         participations,
