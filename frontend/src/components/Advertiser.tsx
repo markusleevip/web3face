@@ -104,12 +104,12 @@ const Advertiser = () => {
   return (
     <div className="advertiser-container">
       <div className="advertiser-header">
-        <h1>Create Promotion Task</h1>
+        <h1>Promotion Task</h1>
         <button 
           className={`view-toggle-btn ${currentView === 'my-promotions' ? 'active' : ''}`}
           onClick={() => setCurrentView(currentView === 'create' ? 'my-promotions' : 'create')}
         >
-          {currentView === 'create' ? 'My Promotions' : 'Create Task'}
+          {currentView === 'create' ? 'My Promotions' : 'Create Promotion'}
         </button>
       </div>
 

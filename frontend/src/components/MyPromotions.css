@@ -7,23 +7,19 @@
 .promotions-header {
   text-align: center;
   margin-bottom: 3rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 3rem 2rem;
-  border-radius: 20px;
-  color: white;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .promotions-header h2 {
   font-size: 2.5rem;
-  font-weight: 700;
+  color: #333;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
 }
 
 .promotions-header p {
-  font-size: 1.2rem;
-  opacity: 0.9;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
 }
 
 .promotions-grid {

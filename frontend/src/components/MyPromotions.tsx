@@ -111,7 +111,6 @@ const MyPromotions = ({ userInfo }: MyPromotionsProps) => {
     <div className="my-promotions-container">
       <div className="promotions-header">
         <h2>My Promotions</h2>
-        <p>View and manage all promotion tasks you've created</p>
       </div>
 
       {promotions.length === 0 ? (
