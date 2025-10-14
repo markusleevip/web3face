@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO } from '../domain/dto';
 import axios from 'axios';
 import './MyPromotions.css';
+import { useWallet } from '@suiet/wallet-kit';
+import { Transaction } from '@mysten/sui/transactions';
+import { SuiClient, getFullnodeUrl } from '@mysten/sui/client';
 
 interface Participant {
   id: string;
@@ -20,13 +23,30 @@ interface ParticipantsListProps {
   onClose: () => void;
 }
 
+interface PromotionTask {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  platform: string;
+  reward: number;
+  status: string;
+  deadline: string;
+  requirements: string[];
+  created_by: string;
+  created_at: string;
+}
+
 const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) => {
+  const { connected, account, signAndExecuteTransaction } = useWallet();
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [task, setTask] = useState<PromotionTask | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [paymentLoading, setPaymentLoading] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchParticipants = async () => {
+    const fetchData = async () => {
       try {
         if (!userInfo) {
           setError('User not authenticated');
@@ -34,25 +54,103 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
           return;
         }
 
-        // 获取任务的参与用户
-        const response = await axios.get(`/api/participation/task/${taskId}`, {
+        // 获取任务信息
+        const tasksResponse = await axios.get('/api/promotion/tasks', {
           headers: {
             'Authorization': `Bearer ${userInfo.token}`
           }
         });
 
-        if (response.data.code === 200) {
-          setParticipants(response.data.data.participations || []);
+        if (tasksResponse.data.code === 200) {
+          const foundTask = tasksResponse.data.data.find((t: PromotionTask) => t.id === taskId);
+          setTask(foundTask || null);
+        }
+
+        // 获取任务的参与用户
+        const participantsResponse = await axios.get(`/api/participation/task/${taskId}`, {
+          headers: {
+            'Authorization': `Bearer ${userInfo.token}`
+          }
+        });
+
+        if (participantsResponse.data.code === 200) {
+          setParticipants(participantsResponse.data.data.participations || []);
         }
       } catch (error: any) {
-        setError(error.response?.data?.message || 'Failed to fetch participants');
+        setError(error.response?.data?.message || 'Failed to fetch data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchParticipants();
+    fetchData();
   }, [taskId, userInfo]);
+
+  const handlePayment = async (participant: Participant) => {
+    if (!connected || !account) {
+      setError('Please connect your wallet first');
+      return;
+    }
+
+    if (!task) {
+      setError('Task information not found');
+      return;
+    }
+
+    setPaymentLoading(participant.id);
+
+    try {
+      // 使用真实的SUI代币转账实现
+      const suiClient = new SuiClient({ url: getFullnodeUrl('testnet') });
+      const senderAddress = account.address;
+      
+      // 检查发送者是否有足够的SUI代币
+      const { data: coins } = await suiClient.getCoins({ owner: senderAddress });
+      const rewardAmount = task.reward * 1000000000; // 转换为最小单位
+      const totalAmount = rewardAmount + 10000000; // 奖励金额 + 预估gas费
+      
+      const suiCoin = coins.find(coin => 
+        coin.coinType === '0x2::sui::SUI' && parseInt(coin.balance) >= totalAmount
+      );
+      
+      if (!suiCoin) {
+        setError(`Insufficient SUI balance. Need at least ${task.reward + 0.01} SUI (including gas fee)`);
+        setPaymentLoading(null);
+        return;
+      }
+
+      // 构建转账交易
+      const txb = new Transaction();
+      txb.setSender(senderAddress);
+      txb.setGasBudget(10000000); // 设置gas预算
+
+      // 拆分代币用于转账
+      const [paymentCoin] = txb.splitCoins(txb.gas, [rewardAmount]);
+
+      // 调用SUI转账函数
+      txb.transferObjects([paymentCoin], participant.user_public_key);
+
+      // 执行交易
+      const result = await signAndExecuteTransaction({
+        transaction: txb,
+      });
+
+      console.log('Payment successful:', result);
+      
+      // 更新参与者状态为已支付
+      setParticipants(prev => prev.map(p => 
+        p.id === participant.id ? { ...p, status: 'paid' } : p
+      ));
+
+      alert(`Payment of ${task.reward} SUI sent successfully to ${participant.user_public_key.slice(0, 8)}...${participant.user_public_key.slice(-6)}\nTransaction Digest: ${result.digest}`);
+      
+    } catch (error: any) {
+      console.error('Payment failed:', error);
+      setError(`Payment failed: ${error.message || 'Unknown error'}`);
+    } finally {
+      setPaymentLoading(null);
+    }
+  };
 
   const getStatusText = (status: string) => {
     switch (status) {
@@ -200,6 +298,32 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
                     >
                       Reject
                     </button>
+                  </div>
+                )}
+
+                {participant.status === 'approved' && task && (
+                  <div className="payment-actions">
+                    <div className="payment-info">
+                      <span className="reward-amount">Reward: {task.reward} SUI</span>
+                    </div>
+                    <button 
+                      className="btn-pay"
+                      onClick={() => handlePayment(participant)}
+                      disabled={paymentLoading === participant.id || !connected}
+                    >
+                      {paymentLoading === participant.id ? 'Processing...' : 'Pay Reward'}
+                    </button>
+                    {!connected && (
+                      <div className="wallet-notice">
+                        Connect wallet to make payment
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {participant.status === 'paid' && (
+                  <div className="payment-status">
+                    <span className="paid-badge">Paid</span>
                   </div>
                 )}
               </div>
