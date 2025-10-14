@@ -2,6 +2,7 @@ use crate::domain::dto::Result;
 use crate::domain::config;
 use crate::domain::social::structs::{TweetInfo, XApiResponse, PromotionTask};
 use crate::database::setup::{get_db, Database};
+use crate::jwt::Claims;
 use spring_web::{axum::Json, route};
 use spring_web::extractor::{Config, Path};
 use serde::{Deserialize, Serialize};
@@ -87,25 +88,25 @@ async fn fetch_x_tweet_info(tweet_id: &str, bearer_token: &str) -> std::result::
 
     if let Some(tweets) = api_response.data {
         if let Some(tweet) = tweets.first() {
-let mut tweet_info = TweetInfo {
-    id: tweet.id.clone(),
-    text: tweet.text.clone(),
-    author_id: tweet.author_id.clone(),
-    author_name: String::new(),
-    author_username: String::new(),
-    author_description: String::new(),
-    author_followers_count: 0,
-    author_following_count: 0,
-    author_tweet_count: 0,
-    author_like_count: 0,
-    author_media_count: 0,
-    retweet_count: tweet.public_metrics.retweet_count,
-    reply_count: tweet.public_metrics.reply_count,
-    like_count: tweet.public_metrics.like_count,
-    quote_count: tweet.public_metrics.quote_count,
-    view_count: tweet.public_metrics.impression_count,
-    created_at: tweet.created_at.clone(),
-};
+            let mut tweet_info = TweetInfo {
+                id: tweet.id.clone(),
+                text: tweet.text.clone(),
+                author_id: tweet.author_id.clone(),
+                author_name: String::new(),
+                author_username: String::new(),
+                author_description: String::new(),
+                author_followers_count: 0,
+                author_following_count: 0,
+                author_tweet_count: 0,
+                author_like_count: 0,
+                author_media_count: 0,
+                retweet_count: tweet.public_metrics.retweet_count,
+                reply_count: tweet.public_metrics.reply_count,
+                like_count: tweet.public_metrics.like_count,
+                quote_count: tweet.public_metrics.quote_count,
+                view_count: tweet.public_metrics.impression_count,
+                created_at: tweet.created_at.clone(),
+            };
 
             // 获取用户信息
             if let Some(includes) = api_response.includes {
@@ -145,10 +146,13 @@ pub struct CreatePromotionTaskRequest {
 
 #[route("/promotion/tasks", method = "POST")]
 async fn create_promotion_task(
+    claims: Claims,
     Json(request): Json<CreatePromotionTaskRequest>
 ) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();
+
+    let user_public_key = claims.sub;
 
     let task_id = Uuid::new_v4().to_string();
     let created_at = SystemTime::now()
@@ -159,6 +163,7 @@ async fn create_promotion_task(
 
     let promotion_task = PromotionTask {
         id: task_id.clone(),
+        user_public_key,
         platform: request.platform,
         url: request.url,
         name: request.name,

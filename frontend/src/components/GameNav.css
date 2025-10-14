@@ -1,7 +1,7 @@
 /* Game Navigation Styles */
 
 .nav-logo img {
-  height: 3rem;
+  height: 2.5rem;
 }
 
 .game-nav {
@@ -9,7 +9,7 @@
   justify-content: center;
   position: relative;
   background-color: #45558f;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid #6e00ff;
 }
 

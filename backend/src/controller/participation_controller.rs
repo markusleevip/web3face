@@ -1,6 +1,7 @@
 use crate::domain::dto::Result;
 use crate::domain::social::participant_structs::{TaskParticipation, SubmitParticipationRequest, UserParticipationsResponse};
 use crate::database::setup::get_db;
+use crate::jwt::Claims;
 use spring_web::{axum::Json, route};
 use rusty_leveldb::LdbIterator;
 
@@ -9,13 +10,13 @@ use uuid::Uuid;
 
 #[route("/participation", method = "POST")]
 async fn submit_participation(
+    claims: Claims,
     Json(request): Json<SubmitParticipationRequest>
 ) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();
-
-    // 这里需要从JWT token中获取用户信息，暂时使用模拟数据
-    let user_public_key = "user_public_key_placeholder".to_string();
+    
+    let user_public_key = claims.sub;
     
     let participation_id = Uuid::new_v4().to_string();
     let submitted_at = SystemTime::now()
@@ -46,14 +47,14 @@ async fn submit_participation(
 }
 
 #[route("/participation/user", method = "GET")]
-async fn get_user_participations() -> Json<Result> {
+async fn get_user_participations(claims: Claims) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();
 
     let mut participations: Vec<TaskParticipation> = Vec::new();
     
     // 这里需要从JWT token中获取用户信息，暂时使用模拟数据
-    let user_public_key = "user_public_key_placeholder".to_string();
+    let user_public_key = claims.sub;
 
     // 使用迭代器遍历数据库中的所有参与记录
     let mut iter = db_guard.new_iter().unwrap();
@@ -82,7 +83,8 @@ async fn get_user_participations() -> Json<Result> {
 
 #[route("/participation/task/:task_id", method = "GET")]
 async fn get_task_participations(
-    spring_web::extractor::Path(task_id): spring_web::extractor::Path<String>
+    spring_web::extractor::Path(task_id): spring_web::extractor::Path<String>,
+    claims: Claims
 ) -> Json<Result> {
     let db = get_db();
     let db_guard = db.db.lock().unwrap();
@@ -97,7 +99,7 @@ async fn get_task_participations(
     let test_participation = TaskParticipation {
         id: "participation-test-1".to_string(),
         task_id: task_id.clone(),
-        user_public_key: "user_public_key_placeholder".to_string(),
+        user_public_key: claims.sub,
         submission_url: "https://x.com/user/status/1234567890".to_string(),
         submission_text: "我已经完成了推广任务，请审核".to_string(),
         status: "pending".to_string(),

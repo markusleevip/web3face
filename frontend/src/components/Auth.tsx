@@ -10,7 +10,7 @@ import {
 import './Auth.css'
 
 import { Button } from 'antd'
-import axios from 'axios';
+import api from '../utils/api';
 
 
 const Auth = () => {
@@ -49,12 +49,12 @@ const Auth = () => {
         sign: signResult.signature,
         sign_text: signText,
       }
-      axios.post('/api/auth', loginRequest)      
+      api.post('/auth', loginRequest)      
         .then(response => {
           console.log('Login successful:', response.data);
         if(response.data.code == 200 ) {
           localStorage.setItem('user', JSON.stringify(response.data.data));
-          localStorage.setItem('token', response.data.data.app_access_token);
+          localStorage.setItem('token', response.data.data.token);
           // 重新加载页面以更新导航栏
           window.location.reload();
         }

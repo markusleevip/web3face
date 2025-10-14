@@ -147,36 +147,25 @@ const PromotionTasks = ({ setCurrent }: PromotionTasksProps) => {
       <div className="tasks-grid">
         {filteredTasks.map(task => (
           <div key={task.id} className="task-card" onClick={() => handleTaskClick(task.id)}>
-            <div className="task-header">
+            <div className="task-content">
               <div className="platform-icon">
                 {getPlatformIcon(task.platform)}
               </div>
               <div className="task-info">
                 <h3 className="task-title">{task.name}</h3>
-                {getStatusBadge(task.status)}
+                <p className="task-description">{task.description}</p>
               </div>
             </div>
-            
-            <p className="task-description">{task.description}</p>
             
             <div className="task-details">
               <div className="reward">
-                <span className="label">奖励:</span>
-                <span className="value">{task.reward} USDC</span>
+                <span className="label">奖励</span>
+                <span className="value">{task.reward} SUI</span>
               </div>
               <div className="deadline">
-                <span className="label">截止:</span>
+                <span className="label">截止日期</span>
                 <span className="value">{task.deadline}</span>
               </div>
-            </div>
-
-            <div className="requirements">
-              <h4>任务要求:</h4>
-              <ul>
-                {task.requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
             </div>
 
             <button className="participate-btn">

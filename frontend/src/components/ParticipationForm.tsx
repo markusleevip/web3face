@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO } from '../domain/dto';
 import axios from 'axios';
+import './ParticipationForm.css';
 
 interface ParticipationFormProps {
   taskId: number;
@@ -126,90 +127,92 @@ const ParticipationForm = ({ taskId, setCurrent }: ParticipationFormProps) => {
   }
 
   return (
-    <div className="participation-form-container">
-      <div className="form-header">
-        <button 
-          className="back-button"
-          onClick={() => setCurrent('promotion-tasks')}
-        >
-          ← 返回任务列表
-        </button>
-        <h1>参与推广任务</h1>
+    <div className="home-container">
+      <div className="participation-form-wrapper">
+        <div className="form-header">
+          <button 
+            className="back-button"
+            onClick={() => setCurrent('promotion-tasks')}
+          >
+            ← 返回任务列表
+          </button>
+          <h1>参与推广任务</h1>
+        </div>
+
+        <div className="task-info-card">
+          <h2>{task.name}</h2>
+          <p className="task-description">{task.description}</p>
+          
+          <div className="task-details">
+            <div className="detail-item">
+              <span className="label">平台:</span>
+              <span className="value">{task.platform.toUpperCase()}</span>
+            </div>
+            <div className="detail-item">
+              <span className="label">奖励:</span>
+              <span className="value">{task.reward} USDC</span>
+            </div>
+            <div className="detail-item">
+              <span className="label">截止时间:</span>
+              <span className="value">{task.deadline}</span>
+            </div>
+          </div>
+
+          <div className="requirements">
+            <h3>任务要求:</h3>
+            <ul>
+              {task.requirements.map((req, index) => (
+                <li key={index}>{req}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="participation-form">
+          <div className="form-group">
+            <label htmlFor="submissionUrl">提交链接 *</label>
+            <input
+              type="url"
+              id="submissionUrl"
+              value={submissionUrl}
+              onChange={(e) => setSubmissionUrl(e.target.value)}
+              className="form-control"
+              placeholder="请输入您完成推广的链接"
+              required
+            />
+            <small className="form-text">
+              请提供您完成推广任务的链接（如推文链接、帖子链接等）
+            </small>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="submissionText">提交说明 *</label>
+            <textarea
+              id="submissionText"
+              value={submissionText}
+              onChange={(e) => setSubmissionText(e.target.value)}
+              className="form-control"
+              placeholder="请简要说明您是如何完成推广任务的"
+              rows={4}
+              required
+            />
+            <small className="form-text">
+              请描述您完成推广任务的具体情况
+            </small>
+          </div>
+
+          {error && <div className="alert alert-danger">{error}</div>}
+          {success && <div className="alert alert-success">{success}</div>}
+
+          <button 
+            type="submit" 
+            className="btn-submit" 
+            disabled={loading}
+          >
+            {loading ? '提交中...' : '提交参与'}
+          </button>
+        </form>
       </div>
-
-      <div className="task-info-card">
-        <h2>{task.name}</h2>
-        <p className="task-description">{task.description}</p>
-        
-        <div className="task-details">
-          <div className="detail-item">
-            <span className="label">平台:</span>
-            <span className="value">{task.platform.toUpperCase()}</span>
-          </div>
-          <div className="detail-item">
-            <span className="label">奖励:</span>
-            <span className="value">{task.reward} USDC</span>
-          </div>
-          <div className="detail-item">
-            <span className="label">截止时间:</span>
-            <span className="value">{task.deadline}</span>
-          </div>
-        </div>
-
-        <div className="requirements">
-          <h3>任务要求:</h3>
-          <ul>
-            {task.requirements.map((req, index) => (
-              <li key={index}>{req}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="participation-form">
-        <div className="form-group">
-          <label htmlFor="submissionUrl">提交链接 *</label>
-          <input
-            type="url"
-            id="submissionUrl"
-            value={submissionUrl}
-            onChange={(e) => setSubmissionUrl(e.target.value)}
-            className="form-control"
-            placeholder="请输入您完成推广的链接"
-            required
-          />
-          <small className="form-text">
-            请提供您完成推广任务的链接（如推文链接、帖子链接等）
-          </small>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="submissionText">提交说明 *</label>
-          <textarea
-            id="submissionText"
-            value={submissionText}
-            onChange={(e) => setSubmissionText(e.target.value)}
-            className="form-control"
-            placeholder="请简要说明您是如何完成推广任务的"
-            rows={4}
-            required
-          />
-          <small className="form-text">
-            请描述您完成推广任务的具体情况
-          </small>
-        </div>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-        {success && <div className="alert alert-success">{success}</div>}
-
-        <button 
-          type="submit" 
-          className="btn-submit" 
-          disabled={loading}
-        >
-          {loading ? '提交中...' : '提交参与'}
-        </button>
-      </form>
     </div>
   );
 };

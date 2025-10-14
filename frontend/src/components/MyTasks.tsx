@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO } from '../domain/dto';
-import axios from 'axios';
+import api from '../utils/api';
 import './MyTasks.css';
 
 interface TaskParticipation {
@@ -47,18 +47,14 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
           setUserInfo(userData);
 
           // 获取用户参与的任务
-          const participationsResponse = await axios.get('/api/participation/user', {
-            headers: {
-              'Authorization': `Bearer ${userData.token}`
-            }
-          });
+          const participationsResponse = await api.get('/participation/user');
 
           if (participationsResponse.data.code === 200) {
             const userParticipations = participationsResponse.data.data.participations;
             setParticipations(userParticipations);
 
             // 获取所有任务信息
-            const tasksResponse = await axios.get('/api/promotion/tasks');
+            const tasksResponse = await api.get('/promotion/tasks');
             if (tasksResponse.data.code === 200) {
               setTasks(tasksResponse.data.data);
             }

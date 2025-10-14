@@ -71,6 +71,7 @@ pub struct UserPublicMetrics {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PromotionTask {
     pub id: String,
+    pub user_public_key: String,
     pub platform: String,
     pub url: String,
     pub name: String,

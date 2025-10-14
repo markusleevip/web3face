@@ -31,7 +31,7 @@ const GameNav = ({ current, setCurrent }: { current: string, setCurrent: (key: s
           className={`nav-item ${current === 'my-tasks' ? 'active' : ''}`}
           onClick={() => setCurrent('my-tasks')}
         >
-          我的任务
+          My Tasks
         </div>
       )}
        <div 
