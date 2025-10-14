@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react';
 import type { UserInfoDTO} from '../domain/dto';
 import './Advertiser.css';
 import axios from 'axios';
+import MyPromotions from './MyPromotions';
 
 const Advertiser = () => {
+  const [currentView, setCurrentView] = useState<'create' | 'my-promotions'>('create');
   const [platform, setPlatform] = useState('x');
   const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
 
@@ -101,9 +103,18 @@ const Advertiser = () => {
 
   return (
     <div className="advertiser-container">
-      <h1>Create Promotion Task</h1>
-      
-      <form onSubmit={handleSubmit} className="promotion-form">
+      <div className="advertiser-header">
+        <h1>Create Promotion Task</h1>
+        <button 
+          className={`view-toggle-btn ${currentView === 'my-promotions' ? 'active' : ''}`}
+          onClick={() => setCurrentView(currentView === 'create' ? 'my-promotions' : 'create')}
+        >
+          {currentView === 'create' ? 'My Promotions' : 'Create Task'}
+        </button>
+      </div>
+
+      {currentView === 'create' ? (
+        <form onSubmit={handleSubmit} className="promotion-form">
         <div className="form-group">
           <label htmlFor="platform">Social Platform</label>
           <select
@@ -211,6 +222,9 @@ const Advertiser = () => {
           {loading ? 'Creating...' : 'Create Promotion Task'}
         </button>
       </form>
+      ) : (
+        <MyPromotions userInfo={userInfo} />
+      )}
     </div>
   );
 };
