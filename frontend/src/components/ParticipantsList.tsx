@@ -137,7 +137,16 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
 
       console.log('Payment successful:', result);
       
-      // 更新参与者状态为已支付
+      // 调用后端API更新参与者状态为已支付
+      await axios.put(`/api/participation/${participant.id}/paid`, {
+        transaction_digest: result.digest
+      }, {
+        headers: {
+          'Authorization': `Bearer ${userInfo?.token}`
+        }
+      });
+
+      // 更新前端状态
       setParticipants(prev => prev.map(p => 
         p.id === participant.id ? { ...p, status: 'paid' } : p
       ));
@@ -160,6 +169,8 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
         return 'Approved';
       case 'rejected':
         return 'Rejected';
+      case 'paid':
+        return 'Paid';
       default:
         return status;
     }
@@ -173,6 +184,8 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
         return 'status-approved';
       case 'rejected':
         return 'status-rejected';
+      case 'paid':
+        return 'status-paid';
       default:
         return '';
     }

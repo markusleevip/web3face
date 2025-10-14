@@ -185,3 +185,38 @@ async fn get_task_participations(
 
     Json(Result::success(serde_json::to_value(response).unwrap()))
 }
+
+#[route("/participation/:participation_id/paid", method = "PUT")]
+async fn mark_participation_paid(
+    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
+    claims: Claims
+) -> Json<Result> {
+    let db = get_db();
+    let mut db_guard = db.db.lock().unwrap();
+
+    // 查找参与记录
+    match db_guard.get(participation_id.as_bytes()) {
+        Some(value) => {
+            let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
+            
+            // 更新状态为已支付
+            participation.status = "paid".to_string();
+            participation.reviewed_at = Some(
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+                    .to_string()
+            );
+            
+            // 保存更新后的记录
+            let updated_data = serde_json::to_vec(&participation).unwrap();
+            db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
+            
+            Json(Result::success(serde_json::to_value(participation).unwrap()))
+        }
+        None => {
+            Json(Result::error("Participation not found".to_string()))
+        }
+    }
+}

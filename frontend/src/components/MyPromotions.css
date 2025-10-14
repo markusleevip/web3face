@@ -105,6 +105,12 @@
   border: 1px solid #ffeaa7;
 }
 
+.status-badge.paid {
+  background: #d1f2eb;
+  color: #0d6251;
+  border: 1px solid #a3e4d7;
+}
+
 .promotion-description {
   color: #4a5568;
   line-height: 1.6;

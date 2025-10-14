@@ -36,7 +36,7 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
   const [tasks, setTasks] = useState<PromotionTask[]>([]);
   const [userInfo, setUserInfo] = useState<UserInfoDTO | null>(null);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'paid'>('all');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -85,6 +85,8 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
         return 'Approved';
       case 'rejected':
         return 'Rejected';
+      case 'paid':
+        return 'Paid';
       default:
         return status;
     }
@@ -98,6 +100,8 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
         return 'status-approved';
       case 'rejected':
         return 'status-rejected';
+      case 'paid':
+        return 'status-paid';
       default:
         return '';
     }
@@ -141,6 +145,12 @@ const MyTasks = ({ setCurrent }: MyTasksProps) => {
             onClick={() => setFilter('rejected')}
           >
             Rejected
+          </button>
+          <button 
+            className={filter === 'paid' ? 'active' : ''}
+            onClick={() => setFilter('paid')}
+          >
+            Paid
           </button>
         </div>
       </div>
