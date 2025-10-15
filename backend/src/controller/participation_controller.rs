@@ -81,76 +81,6 @@ async fn get_user_participations(claims: Claims) -> Json<Result> {
     Json(Result::success(serde_json::to_value(response).unwrap()))
 }
 
-#[route("/participation/:participation_id/approve", method = "PUT")]
-async fn approve_participation(
-    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
-    claims: Claims
-) -> Json<Result> {
-    let db = get_db();
-    let mut db_guard = db.db.lock().unwrap();
-
-    // 查找参与记录
-    match db_guard.get(participation_id.as_bytes()) {
-        Some(value) => {
-            let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
-            
-            // 更新状态为已批准
-            participation.status = "approved".to_string();
-            participation.reviewed_at = Some(
-                SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs()
-                    .to_string()
-            );
-            
-            // 保存更新后的记录
-            let updated_data = serde_json::to_vec(&participation).unwrap();
-            db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
-            
-            Json(Result::success(serde_json::to_value(participation).unwrap()))
-        }
-        None => {
-            Json(Result::error("Participation not found".to_string()))
-        }
-    }
-}
-
-#[route("/participation/:participation_id/reject", method = "PUT")]
-async fn reject_participation(
-    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
-    claims: Claims
-) -> Json<Result> {
-    let db = get_db();
-    let mut db_guard = db.db.lock().unwrap();
-
-    // 查找参与记录
-    match db_guard.get(participation_id.as_bytes()) {
-        Some(value) => {
-            let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
-            
-            // 更新状态为已拒绝
-            participation.status = "rejected".to_string();
-            participation.reviewed_at = Some(
-                SystemTime::now()
-                    .duration_since(UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs()
-                    .to_string()
-            );
-            
-            // 保存更新后的记录
-            let updated_data = serde_json::to_vec(&participation).unwrap();
-            db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
-            
-            Json(Result::success(serde_json::to_value(participation).unwrap()))
-        }
-        None => {
-            Json(Result::error("Participation not found".to_string()))
-        }
-    }
-}
-
 #[route("/participation/task/:task_id", method = "GET")]
 async fn get_task_participations(
     spring_web::extractor::Path(task_id): spring_web::extractor::Path<String>,
@@ -186,21 +116,29 @@ async fn get_task_participations(
     Json(Result::success(serde_json::to_value(response).unwrap()))
 }
 
-#[route("/participation/:participation_id/paid", method = "PUT")]
-async fn mark_participation_paid(
-    spring_web::extractor::Path(participation_id): spring_web::extractor::Path<String>,
+#[route("/participation/:participation_id/:action", method = "PUT")]
+async fn update_participation_status(
+    spring_web::extractor::Path((participation_id, action)): spring_web::extractor::Path<(String, String)>,
     claims: Claims
 ) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();
 
-    // 查找参与记录
+    // Validate the action parameter
+    let new_status = match action.as_str() {
+        "approve" => "approved",
+        "paid" => "paid",
+        "reject" => "rejected",
+        _ => return Json(Result::error("Invalid action".to_string())),
+    };
+
+    // Find the participation record
     match db_guard.get(participation_id.as_bytes()) {
         Some(value) => {
             let mut participation: TaskParticipation = serde_json::from_slice(&value).unwrap();
             
-            // 更新状态为已支付
-            participation.status = "paid".to_string();
+            // Update the status and reviewed_at fields
+            participation.status = new_status.to_string();
             participation.reviewed_at = Some(
                 SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -209,7 +147,7 @@ async fn mark_participation_paid(
                     .to_string()
             );
             
-            // 保存更新后的记录
+            // Save the updated record
             let updated_data = serde_json::to_vec(&participation).unwrap();
             db_guard.put(participation_id.as_bytes(), &updated_data).unwrap();
             
