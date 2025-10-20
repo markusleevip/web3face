@@ -1,6 +1,8 @@
 use crate::domain::dto::Result;
+use crate::domain::config;
 use crate::domain::social::participant_structs::{TaskParticipation, SubmitParticipationRequest, UserParticipationsResponse};
 use crate::database::setup::get_db;
+use spring_web::extractor::{Config};
 use crate::jwt::Claims;
 use spring_web::{axum::Json, route};
 use rusty_leveldb::LdbIterator;
@@ -11,6 +13,7 @@ use uuid::Uuid;
 #[route("/participation", method = "POST")]
 async fn submit_participation(
     claims: Claims,
+    Config(config): Config<config::CustomConfig>,
     Json(request): Json<SubmitParticipationRequest>
 ) -> Json<Result> {
     let db = get_db();
@@ -25,6 +28,16 @@ async fn submit_participation(
         .as_secs()
         .to_string();
 
+    // 初始化粉丝数和用户名
+    let author_followers_count = None;
+    let author_username = None;
+
+    // 检测X平台链接，但暂时不调用API
+    if request.submission_url.contains("x.com") || request.submission_url.contains("twitter.com") {
+        println!("X platform link detected: {}", request.submission_url);
+        // TODO: 在依赖冲突解决后启用X API调用
+    }
+
     let participation = TaskParticipation {
         id: participation_id.clone(),
         task_id: request.task_id,
@@ -35,6 +48,8 @@ async fn submit_participation(
         submitted_at,
         reviewed_at: None,
         reviewer_notes: None,
+        author_followers_count,
+        author_username,
     };
 
     // 序列化参与数据
@@ -84,7 +99,7 @@ async fn get_user_participations(claims: Claims) -> Json<Result> {
 #[route("/participation/task/:task_id", method = "GET")]
 async fn get_task_participations(
     spring_web::extractor::Path(task_id): spring_web::extractor::Path<String>,
-    claims: Claims
+    _claims: Claims
 ) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();
@@ -119,7 +134,7 @@ async fn get_task_participations(
 #[route("/participation/:participation_id/:action", method = "PUT")]
 async fn update_participation_status(
     spring_web::extractor::Path((participation_id, action)): spring_web::extractor::Path<(String, String)>,
-    claims: Claims
+    _claims: Claims
 ) -> Json<Result> {
     let db = get_db();
     let mut db_guard = db.db.lock().unwrap();

@@ -11,6 +11,8 @@ pub struct TaskParticipation {
     pub submitted_at: String,
     pub reviewed_at: Option<String>,
     pub reviewer_notes: Option<String>,
+    pub author_followers_count: Option<u64>,
+    pub author_username: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

@@ -390,6 +390,20 @@
   margin: 0;
 }
 
+.followers-count {
+  color: #e74c3c;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  background-color: #fff5f5;
+  border: 1px solid #fed7d7;
+}
+
 .review-notes {
   background: #fff3cd;
   border: 1px solid #ffeaa7;

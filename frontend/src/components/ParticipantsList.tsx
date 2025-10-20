@@ -15,6 +15,8 @@ interface Participant {
   submitted_at: string;
   reviewed_at: string | null;
   reviewer_notes: string | null;
+  author_followers_count: number | null;
+  author_username: string | null;
 }
 
 interface ParticipantsListProps {
@@ -107,7 +109,7 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
       // 检查发送者是否有足够的SUI代币
       const { data: coins } = await suiClient.getCoins({ owner: senderAddress });
       const rewardAmount = task.reward * 1000000000; // 转换为最小单位
-      const totalAmount = rewardAmount + 10000000; // 奖励金额 + 预估gas费
+      const totalAmount = rewardAmount + 100000000; // 奖励金额 + 预估gas费
       
       const suiCoin = coins.find(coin => 
         coin.coinType === '0x2::sui::SUI' && parseInt(coin.balance) >= totalAmount
@@ -288,6 +290,22 @@ const ParticipantsList = ({ taskId, userInfo, onClose }: ParticipantsListProps) 
                       {new Date(parseInt(participant.submitted_at) * 1000).toLocaleString()}
                     </span>
                   </div>
+                  {participant.author_username && (
+                    <div className="submission-item">
+                      <span className="label">X Username:</span>
+                      <span className="value">
+                        @{participant.author_username}
+                      </span>
+                    </div>
+                  )}
+                  {participant.author_followers_count !== null && (
+                    <div className="submission-item">
+                      <span className="label">Followers:</span>
+                      <span className="value followers-count">
+                        {participant.author_followers_count.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {participant.reviewer_notes && (
