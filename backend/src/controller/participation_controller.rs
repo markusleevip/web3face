@@ -36,7 +36,7 @@ async fn submit_participation(
     if request.submission_url.contains("x.com") || request.submission_url.contains("twitter.com") {
         println!("X platform link detected: {}", request.submission_url);
         // TODO: 在依赖冲突解决后启用X API调用
-    }
+  }
 
     let participation = TaskParticipation {
         id: participation_id.clone(),
