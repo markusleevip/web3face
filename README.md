@@ -1,4 +1,4 @@
-# Web3Face: 革命化社交推广的Web3新范式
+# Web3Face: 社交推广的Web3新范式
 
 ## 摘要
 
